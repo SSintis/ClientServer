@@ -3,14 +3,15 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <nlohmann/json_fwd.hpp>
 #include <ostream>
 #include <string>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <thread>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -18,8 +19,42 @@
 
 #include "../common/AuthData.hpp"
 
+enum class command{
+  EXIT,               // закрыть программу
+  CLOSECHAT,          // закрыть чат(выбрать другой чат)
+  HELP,               // вывести все команды
+  UNK                 // просто переменная которая будет показывать что пользователь фигню ввел
+};
+
+command check_for_input_command(const std::string& message){
+  std::string temp = message;
+  if(temp[0] != '/'){ return command::UNK; }
+  temp.erase(0, 1);
+
+  static const std::map<std::string, command> commands = {
+    {"exit", command::EXIT},
+    {"closechat", command::CLOSECHAT},
+    {"help", command::HELP}
+  };
+
+  auto it = commands.find(temp);
+  if(it != commands.end()) { return it->second; }
+  else { return command::UNK; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 void send_message(int sock, Auth::AuthData userData){
-  char message[1024];
+  std::string message;
   nlohmann::json message_packet; 
 
   message_packet["user"] = {
@@ -29,7 +64,7 @@ void send_message(int sock, Auth::AuthData userData){
   message_packet["receiver"] = userData.receiver;
 
   while(true){
-    std::cin.getline(message, sizeof(message));
+    std::getline(std::cin, message);
     message_packet["message"] = message;
 
     std::string json_str = message_packet.dump();
@@ -98,7 +133,7 @@ int main(){
 
   addr.sin_family = AF_INET;
   addr.sin_port = htons(3425);
-  addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  addr.sin_addr.s_addr = inet_addr("192.168.100.11");
 
   if(connect(sock, (struct sockaddr *) &addr, sizeof addr) == -1){
     perror("connect");
