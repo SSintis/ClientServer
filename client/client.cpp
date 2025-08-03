@@ -9,15 +9,18 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <thread>
 #include <unistd.h>
 #include <arpa/inet.h>
 
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <vector>
+#include <thread>
+#include <atomic>
 
 #include "../common/AuthData.hpp"
+
+std::atomic<bool> is_running{true};
 
 enum class command{
   EXIT,               // закрыть программу
@@ -42,17 +45,6 @@ command check_for_input_command(const std::string& message){
   else { return command::UNK; }
 }
 
-
-
-
-
-
-
-
-
-
-
-
 void send_message(int sock, Auth::AuthData userData){
   std::string message;
   nlohmann::json message_packet; 
@@ -63,8 +55,20 @@ void send_message(int sock, Auth::AuthData userData){
   };
   message_packet["receiver"] = userData.receiver;
 
-  while(true){
+  while(is_running){
     std::getline(std::cin, message);
+    
+    command returned_command = check_for_input_command(message);
+    switch (returned_command) {
+      case command::EXIT: {
+        is_running = false;
+        shutdown(sock, SHUT_RDWR);
+        return;
+      }
+      case command::CLOSECHAT: break;
+      case command::HELP: break;
+      case command::UNK: break;
+    }
     message_packet["message"] = message;
 
     std::string json_str = message_packet.dump();
@@ -75,11 +79,12 @@ void send_message(int sock, Auth::AuthData userData){
 }
 
 void receives_message(int sock){
-  while(true){
+  while(is_running){
     uint32_t net_size;
-    if(recv(sock, &net_size, sizeof(net_size), 0) <= 0){
-      std::cout << "Server turn off" << std::endl;
-      exit(1);
+    if(recv(sock, &net_size, sizeof(net_size), 0) <= 0 || !is_running){
+      std::cout << "Connection closed" << std::endl;
+      is_running = false;
+      return;
     }
     
     size_t data_size = ntohl(net_size);
@@ -87,7 +92,8 @@ void receives_message(int sock){
 
     if(recv(sock, buf.data(), data_size, 0) <= 0){
       std::cout << "Server turn off" << std::endl;
-      exit(2);
+      is_running = false;
+      return;
     }
   
     try {
@@ -145,9 +151,11 @@ int main(){
   send(sock, auth_json.c_str(), auth_json.size(), 0);
 
   std::thread receiver(receives_message, sock);
-  receiver.detach();
-
   send_message(sock, newUser);
 
-  close(sock);
+  if(!is_running){
+    receiver.join();
+    close(sock);
+    return 0;
+  }
 }
