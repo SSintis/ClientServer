@@ -1,0 +1,3 @@
+/home/emo_profisional/programingCplusPlus/clientserver/server/build/CMakeFiles/server.dir
+/home/emo_profisional/programingCplusPlus/clientserver/server/build/CMakeFiles/edit_cache.dir
+/home/emo_profisional/programingCplusPlus/clientserver/server/build/CMakeFiles/rebuild_cache.dir

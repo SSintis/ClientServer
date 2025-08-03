@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <nlohmann/json_fwd.hpp>
+#include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -33,6 +34,22 @@ void handle_clients(int sock){
  
     try {
       auto json_data = nlohmann::json::parse(buf);
+      if(json_data["command"] == "snu"){
+        nlohmann::json message_packet;
+        std::string users;
+
+        for(const auto& pair : client_sockets){
+          users += " " + pair.first;
+        }
+        message_packet["users"] = users;
+
+        std::string json_str = message_packet.dump();
+        uint32_t net_send_size = ntohl(json_str.size());
+        send(sock, &net_size, sizeof(net_size), 0);
+        send(sock, json_str.c_str(), json_str.size(), 0);
+
+        continue;
+      }
       std::string receiver = json_data["receiver"];
 
       if(client_sockets.find(receiver) == client_sockets.end()){

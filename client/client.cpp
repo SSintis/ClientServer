@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <iterator>
 #include <ostream>
 #include <string>
 
@@ -24,10 +25,17 @@ std::atomic<bool> is_running{true};
 
 enum class command{
   EXIT,               // закрыть программу
-  CLOSECHAT,          // закрыть чат(выбрать другой чат)
+  SNU,          // закрыть чат(выбрать другой чат)
   HELP,               // вывести все команды
   UNK                 // просто переменная которая будет показывать что пользователь фигню ввел
 };
+
+void help(){
+  std::cout << "\033[1;36m--- HELP ---\033[0m\n";
+  std::cout << "/exit - завершить программу\n";
+  std::cout << "/snu - сменить получателя сообщений\n";
+  std::cout << "/help - вывести это сообщение\n";
+}
 
 command check_for_input_command(const std::string& message){
   std::string temp = message;
@@ -36,7 +44,7 @@ command check_for_input_command(const std::string& message){
 
   static const std::map<std::string, command> commands = {
     {"exit", command::EXIT},
-    {"closechat", command::CLOSECHAT},
+    {"snu", command::SNU},
     {"help", command::HELP}
   };
 
@@ -54,6 +62,7 @@ void send_message(int sock, Auth::AuthData userData){
     {"password", userData.password}
   };
   message_packet["receiver"] = userData.receiver;
+  message_packet["command"] = "";
 
   while(is_running){
     std::getline(std::cin, message);
@@ -65,8 +74,49 @@ void send_message(int sock, Auth::AuthData userData){
         shutdown(sock, SHUT_RDWR);
         return;
       }
-      case command::CLOSECHAT: break;
-      case command::HELP: break;
+      case command::SNU:{
+        message_packet["command"] = "snu";
+        message_packet["message"] = "request_users";
+
+        std::string json_str = message_packet.dump();
+        uint32_t net_size = ntohl(json_str.size());
+        send(sock, &net_size, sizeof(net_size), 0);
+        send(sock, json_str.data(), json_str.size(), 0);
+
+        uint32_t net_rec_size;
+        if(recv(sock, &net_rec_size, sizeof(net_rec_size), 0) <= 0){
+          std::cout << "Error with get size into server" << std::endl;
+          continue;
+        }
+        
+        size_t data_size = ntohl(net_rec_size);
+        std::vector<char> buf(data_size + 1);
+        buf[data_size] = '\0';
+
+        if(recv(sock, buf.data(), data_size, 0) <= 0){
+          std::cout << "Error with get data into server" << std::endl;
+          continue;
+        }
+
+        try{
+          auto json_data = nlohmann::json::parse(buf);
+          std::cout << "Select user:\n" << json_data["users"] << std::endl;
+        }catch (const nlohmann::json::parse_error& e){
+          std::cerr << "JSON error: " << e.what() << std::endl;
+        }
+
+        std::cout << "Enter new login -> ";
+        std::getline(std::cin, userData.receiver);
+
+        message_packet["receiver"] = userData.receiver;
+        message = "NEW CONNECTION!!!";
+        message_packet["command"] = "\0";
+        break;
+      }
+      case command::HELP:{
+        help();
+        continue;
+      }
       case command::UNK: break;
     }
     message_packet["message"] = message;
@@ -88,7 +138,8 @@ void receives_message(int sock){
     }
     
     size_t data_size = ntohl(net_size);
-    std::vector<char> buf(data_size);
+    std::vector<char> buf(data_size + 1);
+    buf[data_size] = '\0';
 
     if(recv(sock, buf.data(), data_size, 0) <= 0){
       std::cout << "Server turn off" << std::endl;
@@ -98,6 +149,9 @@ void receives_message(int sock){
   
     try {
       auto json_data = nlohmann::json::parse(buf);
+      
+      if(json_data.contains("users")) continue;
+
       std::cout << json_data["user"]["sender"] << ": " << json_data["message"] << std::endl;
     } catch (const nlohmann::json::parse_error& e) {
       std::cerr << "JSON error: " << e.what() << std::endl;
