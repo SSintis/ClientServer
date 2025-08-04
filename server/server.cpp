@@ -34,6 +34,8 @@ void handle_clients(int sock){
  
     try {
       auto json_data = nlohmann::json::parse(buf);
+      json_data["type"] = "message";
+      
       if(json_data["command"] == "snu"){
         nlohmann::json message_packet;
         std::string users;
@@ -42,6 +44,7 @@ void handle_clients(int sock){
           users += " " + pair.first;
         }
         message_packet["users"] = users;
+        message_packet["type"] = "user_list";
 
         std::string json_str = message_packet.dump();
         uint32_t net_send_size = ntohl(json_str.size());
@@ -56,17 +59,18 @@ void handle_clients(int sock){
         std::cerr << "Unknown user - " << receiver << std::endl;
         continue;
       }
-
-      uint32_t net_send_size = htonl(data_size);
+  
+      std::string json_str = json_data.dump();
+      uint32_t net_send_size = ntohl(json_str.size());
 
       if(send(client_sockets[receiver], &net_send_size, sizeof(net_send_size), 0) < 0){
         std::cerr << "Failed to send size to " << receiver << std::endl;
       }
-      if(send(client_sockets[receiver], buf.data(), data_size, 0) < 0){
+      if(send(client_sockets[receiver], json_str.data(), json_str.size(), 0) < 0){
         std::cerr << "Failed to send data to " << receiver << std::endl;
       }
     } catch (const nlohmann::json::parse_error& e) {
-    
+      std::cerr << "JSDON error: " << e.what() << std::endl; 
     }
   }
   close(sock);

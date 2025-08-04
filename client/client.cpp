@@ -1,9 +1,10 @@
+#include <condition_variable>
 #include <csignal>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <iterator>
+#include <mutex>
 #include <ostream>
 #include <string>
 
@@ -23,11 +24,15 @@
 
 std::atomic<bool> is_running{true};
 
+std::mutex mtx;
+std::condition_variable cv;
+bool is_user_list_received = false;
+
 enum class command{
-  EXIT,               // закрыть программу
-  SNU,          // закрыть чат(выбрать другой чат)
-  HELP,               // вывести все команды
-  UNK                 // просто переменная которая будет показывать что пользователь фигню ввел
+  EXIT,       
+  SNU,          
+  HELP,         
+  UNK           
 };
 
 void help(){
@@ -83,30 +88,16 @@ void send_message(int sock, Auth::AuthData userData){
         send(sock, &net_size, sizeof(net_size), 0);
         send(sock, json_str.data(), json_str.size(), 0);
 
-        uint32_t net_rec_size;
-        if(recv(sock, &net_rec_size, sizeof(net_rec_size), 0) <= 0){
-          std::cout << "Error with get size into server" << std::endl;
-          continue;
-        }
-        
-        size_t data_size = ntohl(net_rec_size);
-        std::vector<char> buf(data_size + 1);
-        buf[data_size] = '\0';
-
-        if(recv(sock, buf.data(), data_size, 0) <= 0){
-          std::cout << "Error with get data into server" << std::endl;
-          continue;
+        {
+          std::unique_lock<std::mutex> lock(mtx);
+          cv.wait(lock, [] { return is_user_list_received; });
+          is_user_list_received = false;
         }
 
-        try{
-          auto json_data = nlohmann::json::parse(buf);
-          std::cout << "Select user:\n" << json_data["users"] << std::endl;
-        }catch (const nlohmann::json::parse_error& e){
-          std::cerr << "JSON error: " << e.what() << std::endl;
-        }
-
+        std::string new_user;
         std::cout << "Enter new login -> ";
-        std::getline(std::cin, userData.receiver);
+        std::getline(std::cin, new_user);
+        userData.receiver = new_user;
 
         message_packet["receiver"] = userData.receiver;
         message = "NEW CONNECTION!!!";
@@ -150,9 +141,17 @@ void receives_message(int sock){
     try {
       auto json_data = nlohmann::json::parse(buf);
       
-      if(json_data.contains("users")) continue;
-
-      std::cout << json_data["user"]["sender"] << ": " << json_data["message"] << std::endl;
+      if(json_data["type"] == "user_list"){
+        std::cout << json_data["users"];
+        {
+          std::lock_guard<std::mutex> lock(mtx);
+          is_user_list_received = true;
+        }
+        cv.notify_one();
+      }
+      else if(json_data["type"] == "message"){
+        std::cout << json_data["user"]["sender"] << ": " << json_data["message"] << std::endl;
+      }
     } catch (const nlohmann::json::parse_error& e) {
       std::cerr << "JSON error: " << e.what() << std::endl;
     }
