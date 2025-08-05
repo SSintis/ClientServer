@@ -1,0 +1,19 @@
+// Первоначальные данные, которые постоянно отправляются между пользователем и сервером
+
+{
+  "user":{
+    "sernder" : "some value",
+    "password" : "some vales" // Удаляется на сервере
+  },
+  "receiver" : "some value",
+  "command" : "some value, in default - ''",
+  "type" : "message",
+  "message" : "some message" 
+}
+
+// user list
+
+{
+  "type" : "user_list",
+  "user_list" : "users"
+}

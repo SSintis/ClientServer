@@ -59,7 +59,9 @@ void handle_clients(int sock){
         std::cerr << "Unknown user - " << receiver << std::endl;
         continue;
       }
-  
+
+      if(json_data.contains("password")) json_data.erase("password");
+      
       std::string json_str = json_data.dump();
       uint32_t net_send_size = ntohl(json_str.size());
 
