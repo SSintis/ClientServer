@@ -41,7 +41,7 @@ void handle_clients(int sock){
         std::string users;
 
         for(const auto& pair : client_sockets){
-          users += " " + pair.first;
+          users += pair.first + " ";
         }
         message_packet["users"] = users;
         message_packet["type"] = "user_list";
