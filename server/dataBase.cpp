@@ -87,5 +87,31 @@ bool dataBase::save_message(Message message){
 }
 
 std::vector<Message> dataBase::get_message_history(const std::string& user1, const std::string& user2){
+  std::vector<Message> history;
+  sqlite3_stmt* stmt;
 
+  const char* sql = "SELECT sender, message FROM messages "
+                    "WHERE (sender = ? AND receiver = ?) "
+                    "OR (sender = ? AND receiver = ?);";
+
+  if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
+    std::cerr << "Ошибка при подготовке запроса(запрос истории сообщений): " << sqlite3_errmsg(db);
+    return history;
+  }
+
+  sqlite3_bind_text(stmt, 1, user1.c_str(), -1, SQLITE_STATIC);
+  sqlite3_bind_text(stmt, 2, user2.c_str(), -1, SQLITE_STATIC);
+  sqlite3_bind_text(stmt, 3, user2.c_str(), -1, SQLITE_STATIC);
+  sqlite3_bind_text(stmt, 4, user1.c_str(), -1, SQLITE_STATIC);
+
+  while(sqlite3_step(stmt) == SQLITE_ROW){
+    Message msg;
+    msg.sender = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    msg.message = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+
+    history.push_back(msg);
+  }
+
+  sqlite3_finalize(stmt);
+  return history;
 }

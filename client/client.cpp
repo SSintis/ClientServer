@@ -31,7 +31,8 @@ bool is_user_list_received = false;
 enum class command{
   EXIT,       
   SNU,          
-  HELP,         
+  HELP,       
+  HISTORY,
   UNK           
 };
 
@@ -39,6 +40,7 @@ void help(){
   std::cout << "\033[1;36m--- HELP ---\033[0m\n";
   std::cout << "/exit - завершить программу\n";
   std::cout << "/snu - сменить получателя сообщений\n";
+  std::cout << "/history - вывести историю сообщений\n";
   std::cout << "/help - вывести это сообщение\n";
 }
 
@@ -50,7 +52,8 @@ command check_for_input_command(const std::string& message){
   static const std::map<std::string, command> commands = {
     {"exit", command::EXIT},
     {"snu", command::SNU},
-    {"help", command::HELP}
+    {"help", command::HELP},
+    {"history", command::HISTORY}
   };
 
   auto it = commands.find(temp);
@@ -67,9 +70,9 @@ void send_message(int sock, Auth::AuthData userData){
     {"password", userData.password}
   };
   message_packet["receiver"] = userData.receiver;
-  message_packet["command"] = "";
 
   while(is_running){
+    message_packet["command"] = "";
     std::getline(std::cin, message);
     
     command returned_command = check_for_input_command(message);
@@ -103,6 +106,22 @@ void send_message(int sock, Auth::AuthData userData){
         message = "NEW CONNECTION!!!";
         message_packet["command"] = "\0";
         break;
+      }
+      case command::HISTORY:{
+        std::string user;
+        std::cout << "Enter user -> ";
+        std::getline(std::cin, user);
+
+        message_packet["command"] = "history";
+        message_packet["message"] = "request_history";
+        message_packet["receiver"] = user;
+        
+        std::string json_str = message_packet.dump();
+        uint32_t net_size = ntohl(json_str.size());
+        send(sock, &net_size, sizeof(net_size), 0);
+        send(sock, json_str.data(), json_str.size(), 0);
+      
+        continue;
       }
       case command::HELP:{
         help();
@@ -151,6 +170,11 @@ void receives_message(int sock){
       }
       else if(json_data["type"] == "message"){
         std::cout << json_data["user"]["sender"] << ": " << json_data["message"] << std::endl;
+      }
+      else if(json_data["type"] == "history"){
+        system("clear");
+        std::string his = json_data["history"];
+        std::cout << his.c_str() << std::endl;
       }
     } catch (const nlohmann::json::parse_error& e) {
       std::cerr << "JSON error: " << e.what() << std::endl;

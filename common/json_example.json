@@ -17,3 +17,10 @@
   "type" : "user_list",
   "user_list" : "users"
 }
+
+// history
+
+{
+  "type" : "history",
+  "history" : "some history"
+}

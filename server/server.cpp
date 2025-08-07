@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <locale>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <sys/types.h>
@@ -18,6 +19,7 @@
 #include "dataBase.hpp"
 
 std::unordered_map<std::string, int> client_sockets;
+dataBase db("user_db.db");
 
 void handle_clients(int sock){
   while(true){
@@ -48,11 +50,33 @@ void handle_clients(int sock){
 
         std::string json_str = message_packet.dump();
         uint32_t net_send_size = ntohl(json_str.size());
-        send(sock, &net_size, sizeof(net_size), 0);
+        send(sock, &net_send_size, sizeof(net_send_size), 0);
         send(sock, json_str.c_str(), json_str.size(), 0);
 
         continue;
       }
+      else if(json_data["command"] == "history"){
+        std::vector<Message> history = db.get_message_history(json_data["user"]["sender"], json_data["receiver"]);
+
+        nlohmann::json message_packet;
+        std::string show_history;
+
+        if(history.empty()){ std::cout << "vector histrory is empty!!!\n"; }
+        for(const Message msg : history){
+          show_history += msg.sender + " -> " + msg.message + '\n';
+        }
+
+        message_packet["history"] = show_history;
+        message_packet["type"] = "history";
+      
+        std::string json_str = message_packet.dump();
+        uint32_t net_send_size = ntohl(json_str.size());
+        send(sock, &net_send_size, sizeof(net_send_size), 0);
+        send(sock, json_str.c_str(), json_str.size(), 0);
+      
+        continue;
+      } 
+  
       std::string receiver = json_data["receiver"];
 
       if(client_sockets.find(receiver) == client_sockets.end()){
@@ -61,7 +85,14 @@ void handle_clients(int sock){
       }
 
       if(json_data.contains("password")) json_data.erase("password");
-      
+     
+      Message msg;
+      msg.sender = json_data["user"]["sender"];
+      msg.receiver = json_data["receiver"];
+      msg.message = json_data["message"];
+
+      db.save_message(msg);
+
       std::string json_str = json_data.dump();
       uint32_t net_send_size = ntohl(json_str.size());
 
@@ -79,8 +110,6 @@ void handle_clients(int sock){
 }
 
 void handle_auth(int sock){
-  dataBase db("user_database.db");
-
   uint32_t net_size;
   if(recv(sock, &net_size, sizeof(net_size), 0) <= 0) return;
 
