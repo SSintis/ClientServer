@@ -20,7 +20,7 @@
 #include <thread>
 #include <atomic>
 
-#include "../common/AuthData.hpp"
+#include "../common/Auth_Data.hpp"
 
 std::atomic<bool> is_running{true};
 
@@ -61,6 +61,16 @@ command check_for_input_command(const std::string& message){
   else { return command::UNK; }
 }
 
+void send_to_server(const std::string& json_data, int sock){
+  uint32_t net_size = ntohl(json_data.size());
+  if(send(sock, &net_size, sizeof(net_size), 0) < 0){
+    std::cerr << "Error: Failed or there was some other problem sending the data size." << std::endl;
+  }
+  if(send(sock, json_data.data(), json_data.size(), 0) < 0){
+    std::cerr << "Error: Failed or there were other problems sending data" << std::endl;
+  }
+}
+
 void send_message(int sock, Auth::AuthData userData){
   std::string message;
   nlohmann::json message_packet; 
@@ -87,10 +97,8 @@ void send_message(int sock, Auth::AuthData userData){
         message_packet["message"] = "request_users";
 
         std::string json_str = message_packet.dump();
-        uint32_t net_size = ntohl(json_str.size());
-        send(sock, &net_size, sizeof(net_size), 0);
-        send(sock, json_str.data(), json_str.size(), 0);
-
+        send_to_server(json_str, sock);
+        
         {
           std::unique_lock<std::mutex> lock(mtx);
           cv.wait(lock, [] { return is_user_list_received; });
@@ -117,10 +125,8 @@ void send_message(int sock, Auth::AuthData userData){
         message_packet["receiver"] = user;
         
         std::string json_str = message_packet.dump();
-        uint32_t net_size = ntohl(json_str.size());
-        send(sock, &net_size, sizeof(net_size), 0);
-        send(sock, json_str.data(), json_str.size(), 0);
-      
+        send_to_server(json_str, sock);
+
         continue;
       }
       case command::HELP:{
@@ -132,9 +138,7 @@ void send_message(int sock, Auth::AuthData userData){
     message_packet["message"] = message;
 
     std::string json_str = message_packet.dump();
-    uint32_t net_size = ntohl(json_str.size());
-    send(sock, &net_size, sizeof(net_size), 0);
-    send(sock, json_str.c_str(), json_str.size(), 0);
+    send_to_server(json_str, sock);
   }
 }
 
@@ -223,9 +227,7 @@ int main(){
     exit(2);
   }
   
-  uint32_t net_size = htonl(auth_json.size());
-  send(sock, &net_size, sizeof(net_size), 0);
-  send(sock, auth_json.c_str(), auth_json.size(), 0);
+  send_to_server(auth_json, sock);
 
   std::thread receiver(receives_message, sock);
   send_message(sock, newUser);

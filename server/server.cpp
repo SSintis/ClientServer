@@ -2,7 +2,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <locale>
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 #include <sys/types.h>
@@ -16,7 +15,7 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-#include "dataBase.hpp"
+#include "data_base.hpp"
 
 std::unordered_map<std::string, int> client_sockets;
 dataBase db("user_db.db");
