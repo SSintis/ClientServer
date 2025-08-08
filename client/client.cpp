@@ -22,54 +22,14 @@
 
 #include "../common/Auth_Data.hpp"
 
+#include "client_network.hpp"
+#include "client_command.hpp"
+
 std::atomic<bool> is_running{true};
 
 std::mutex mtx;
 std::condition_variable cv;
 bool is_user_list_received = false;
-
-enum class command{
-  EXIT,       
-  SNU,          
-  HELP,       
-  HISTORY,
-  UNK           
-};
-
-void help(){
-  std::cout << "\033[1;36m--- HELP ---\033[0m\n";
-  std::cout << "/exit - завершить программу\n";
-  std::cout << "/snu - сменить получателя сообщений\n";
-  std::cout << "/history - вывести историю сообщений\n";
-  std::cout << "/help - вывести это сообщение\n";
-}
-
-command check_for_input_command(const std::string& message){
-  std::string temp = message;
-  if(temp[0] != '/'){ return command::UNK; }
-  temp.erase(0, 1);
-
-  static const std::map<std::string, command> commands = {
-    {"exit", command::EXIT},
-    {"snu", command::SNU},
-    {"help", command::HELP},
-    {"history", command::HISTORY}
-  };
-
-  auto it = commands.find(temp);
-  if(it != commands.end()) { return it->second; }
-  else { return command::UNK; }
-}
-
-void send_to_server(const std::string& json_data, int sock){
-  uint32_t net_size = ntohl(json_data.size());
-  if(send(sock, &net_size, sizeof(net_size), 0) < 0){
-    std::cerr << "Error: Failed or there was some other problem sending the data size." << std::endl;
-  }
-  if(send(sock, json_data.data(), json_data.size(), 0) < 0){
-    std::cerr << "Error: Failed or there were other problems sending data" << std::endl;
-  }
-}
 
 void send_message(int sock, Auth::AuthData userData){
   std::string message;
@@ -88,49 +48,20 @@ void send_message(int sock, Auth::AuthData userData){
     command returned_command = check_for_input_command(message);
     switch (returned_command) {
       case command::EXIT: {
-        is_running = false;
-        shutdown(sock, SHUT_RDWR);
+        handle_exit_command(sock, is_running);
         return;
       }
       case command::SNU:{
-        message_packet["command"] = "snu";
-        message_packet["message"] = "request_users";
-
-        std::string json_str = message_packet.dump();
-        send_to_server(json_str, sock);
-        
-        {
-          std::unique_lock<std::mutex> lock(mtx);
-          cv.wait(lock, [] { return is_user_list_received; });
-          is_user_list_received = false;
-        }
-
-        std::string new_user;
-        std::cout << "Enter new login -> ";
-        std::getline(std::cin, new_user);
-        userData.receiver = new_user;
-
-        message_packet["receiver"] = userData.receiver;
-        message = "NEW CONNECTION!!!";
-        message_packet["command"] = "\0";
+        handle_snu_command(sock, message_packet, userData, mtx, cv, is_user_list_received);
+        message = "";
         break;
       }
       case command::HISTORY:{
-        std::string user;
-        std::cout << "Enter user -> ";
-        std::getline(std::cin, user);
-
-        message_packet["command"] = "history";
-        message_packet["message"] = "request_history";
-        message_packet["receiver"] = user;
-        
-        std::string json_str = message_packet.dump();
-        send_to_server(json_str, sock);
-
+        handle_history_command(sock, message_packet);
         continue;
       }
       case command::HELP:{
-        help();
+        handle_help_command();
         continue;
       }
       case command::UNK: break;
