@@ -16,14 +16,13 @@
 
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <vector>
 #include <thread>
 #include <atomic>
 
-#include "../common/Auth_Data.hpp"
+#include "../../common/Auth_Data.hpp"
 
-#include "client_network.hpp"
-#include "client_command.hpp"
+#include "../include/client_network.hpp"
+#include "../include/client_command.hpp"
 
 std::atomic<bool> is_running{true};
 

@@ -1,6 +1,6 @@
-#include "client_command.hpp"
-#include "client_network.hpp"
-#include "client_ui.hpp"
+#include "../include/client_command.hpp"
+#include "../include/client_network.hpp"
+#include "../include/client_ui.hpp"
 
 #include <mutex>
 #include <string>
