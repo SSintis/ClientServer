@@ -117,13 +117,12 @@ void handle_auth(int sock){
   std::vector<char> buf(data_size);
   if(recv(sock, buf.data(), data_size, 0) <= 0) return;
 
-  std::string login;
-
   try {
     auto json_data = nlohmann::json::parse(buf);  
-    login = json_data["user"]["sender"];
+    std::string login = json_data["user"]["sender"];
+    std::string password_hash = json_data["user"]["password"];
 
-    if(!db.auth_user(login)) db.register_user(login);
+    if(!db.auth_user(login, password_hash)) db.register_user(login, password_hash);
     
     client_sockets[login] = sock;
     std::thread(handle_clients, sock).detach();

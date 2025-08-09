@@ -1,4 +1,4 @@
-#include "dataBase.hpp"
+#include "data_base.hpp"
 #include <cstddef>
 #include <iostream>
 #include <ostream>
@@ -13,7 +13,8 @@ dataBase::dataBase(const std::string& filename){
   
   const char* sql_users = "CREATE TABLE IF NOT EXISTS users ("
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    "login TEXT UNIQUE NOT NULL);";
+                    "login TEXT UNIQUE NOT NULL, "
+                    "password_hash TEXT NOT NULL);";
 
   const char* sql_message = "CREATE TABLE IF NOT EXISTS messages ("
                             "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -36,9 +37,9 @@ dataBase::dataBase(const std::string& filename){
   }
 }
 
-bool dataBase::register_user(const std::string& login){
+bool dataBase::register_user(const std::string& login, const std::string& password_hash){
   sqlite3_stmt* stmt;
-  const char* sql = "INSERT INTO users (login) VALUES (?);";
+  const char* sql = "INSERT INTO users (login, password_hash) VALUES (?, ?);";
 
   if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
     std::cerr << "Ошибка при подготовке запроса(регистрация): " << sqlite3_errmsg(db) << std::endl;
@@ -46,15 +47,17 @@ bool dataBase::register_user(const std::string& login){
   }
 
   sqlite3_bind_text(stmt, 1, login.c_str(), -1, SQLITE_STATIC);
+  sqlite3_bind_text(stmt, 2, password_hash.c_str(), -1, SQLITE_STATIC);
+  
   bool success = (sqlite3_step(stmt) == SQLITE_ROW);
 
   sqlite3_finalize(stmt);
   return success;
 }
 
-bool dataBase::auth_user(const std::string& login){
+bool dataBase::auth_user(const std::string& login, const std::string& password_hash){
   sqlite3_stmt* stmt;
-  const char* sql = "SELECT id FROM users WHERE login = ?;";
+  const char* sql = "SELECT password_hash FROM users WHERE login = ?;";
 
   if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
     std::cerr << "Ошибка при подготовке запроса: " << sqlite3_errmsg(db) << std::endl;
@@ -62,10 +65,14 @@ bool dataBase::auth_user(const std::string& login){
   }
 
   sqlite3_bind_text(stmt, 1, login.c_str(), -1, SQLITE_STATIC);
-  bool found = (sqlite3_step(stmt) == SQLITE_ROW);
+  bool auth_success = false; 
+  if (sqlite3_step(stmt) == SQLITE_ROW){
+    const char* stored_hash = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    auth_success = (password_hash == stored_hash);
+  }
 
   sqlite3_finalize(stmt);
-  return found;
+  return auth_success;
 }
 
 bool dataBase::save_message(Message message){
