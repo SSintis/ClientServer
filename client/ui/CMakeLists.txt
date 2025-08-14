@@ -8,13 +8,13 @@ set(CMAKE_AUTOUIC ON)  # Включено -> .ui файл можно не ука
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 add_executable(client
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    # mainwindow.ui  # Необязательно, но можно добавить для ясности
+  main.cpp
+  mainwindow.cpp
+  LoginWindow.cpp 
+  # mainwindow.ui  # Необязательно, но можно добавить для ясности
 )
 
 target_link_libraries(client
-    Qt6::Core
-    Qt6::Widgets
+  Qt6::Core
+  Qt6::Widgets
 )
