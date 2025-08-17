@@ -1,5 +1,0 @@
-/home/emo_profisional/programingCplusPlus/clientserver/client/ui/build/CMakeFiles/client.dir
-/home/emo_profisional/programingCplusPlus/clientserver/client/ui/build/CMakeFiles/edit_cache.dir
-/home/emo_profisional/programingCplusPlus/clientserver/client/ui/build/CMakeFiles/rebuild_cache.dir
-/home/emo_profisional/programingCplusPlus/clientserver/client/ui/build/CMakeFiles/client_autogen_timestamp_deps.dir
-/home/emo_profisional/programingCplusPlus/clientserver/client/ui/build/CMakeFiles/client_autogen.dir

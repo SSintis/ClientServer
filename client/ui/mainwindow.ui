@@ -30,9 +30,9 @@
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>320</y>
-      <width>611</width>
+      <width>631</width>
       <height>26</height>
      </rect>
     </property>
@@ -40,9 +40,9 @@
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>50</y>
-      <width>691</width>
+      <width>711</width>
       <height>261</height>
      </rect>
     </property>
@@ -50,7 +50,7 @@
    <widget class="QLineEdit" name="lineEdit_receiver">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>100</x>
       <y>10</y>
       <width>201</width>
       <height>26</height>
@@ -60,7 +60,7 @@
    <widget class="QPushButton" name="pushButton_receiver">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>10</y>
       <width>88</width>
       <height>26</height>
@@ -71,17 +71,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>730</width>
-     <height>23</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

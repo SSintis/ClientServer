@@ -2,5 +2,5 @@ CompileFlags:
   Add:
     - "-I/usr/include/x86_64-linux-gnu/qt6"               # Основной путь Qt
     - "-I/usr/include/x86_64-linux-gnu/qt6/QtWidgets"     # Для QMainWindow
-    - "-I/usr/include/qt6/QtCore"        # Для базовых классов
+    - "-I/usr/include/x86_64-linux-gnu/qt6/QtCore"        # Для базовых классов
     - "-std=c++17"
