@@ -68,7 +68,7 @@ void send_message(int sock, Auth::AuthData userData){
     message_packet["message"] = message;
 
     std::string json_str = message_packet.dump();
-    send_to_server(json_str, sock);
+    NetworkHandler::send_to_server(json_str, sock);
   }
 }
 

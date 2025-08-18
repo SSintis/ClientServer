@@ -29,7 +29,7 @@ private:
 
   int sock;
   std::atomic<bool> is_running;
-  Auth::AuthData auth_data;
+  Auth::AuthData user_data;
   std::thread receive_thread;
 };
 
