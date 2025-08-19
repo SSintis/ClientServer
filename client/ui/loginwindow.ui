@@ -52,7 +52,7 @@
    <property name="geometry">
     <rect>
      <x>320</x>
-     <y>230</y>
+     <y>260</y>
      <width>80</width>
      <height>26</height>
     </rect>
@@ -65,6 +65,22 @@
    </property>
    <property name="text">
     <string>Войти</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="receiverEdit">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>230</y>
+     <width>142</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="echoMode">
+    <enum>QLineEdit::Normal</enum>
+   </property>
+   <property name="placeholderText">
+    <string>Получатель</string>
    </property>
   </widget>
  </widget>

@@ -14,7 +14,7 @@
 ChatClient::ChatClient(QObject* parent) : QObject(parent), is_running(false), sock(-1) {}
 ChatClient::~ChatClient() { stop(); }
 
-void ChatClient::connect_to_server(const std::string& ip, const int port, const Auth::AuthData& auth_data){
+bool ChatClient::connect_to_server(const std::string& ip, const int port, const Auth::AuthData& auth_data){
   this->user_data = auth_data;
   
   struct sockaddr_in addr;
@@ -22,7 +22,7 @@ void ChatClient::connect_to_server(const std::string& ip, const int port, const 
 
   if(sock == -1) {
     emit connection_error("Failed to create socket");
-    return;
+    return 0;
   }
 
   addr.sin_family = AF_INET;
@@ -32,7 +32,7 @@ void ChatClient::connect_to_server(const std::string& ip, const int port, const 
   if(::connect(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1){
     emit connection_error("Failed to connect to server");
     close(sock);
-    return;
+    return 0;
   }
  
   nlohmann::json user_data_packet;
@@ -46,6 +46,8 @@ void ChatClient::connect_to_server(const std::string& ip, const int port, const 
 
   is_running = true;
   receive_thread = std::thread(&ChatClient::received_thread, this); 
+
+  return 1;
 }
 
 void ChatClient::send_message(const std::string& message){
@@ -84,7 +86,7 @@ void ChatClient::received_thread(){
         auto json_data = nlohmann::json::parse(data);
         proccesed_message(json_data);
       } catch (nlohmann::json::parse_error& e) {
-      
+        // добавить сюда обработку ошибок и тд 
       }
     } 
   }

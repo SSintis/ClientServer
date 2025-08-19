@@ -12,10 +12,10 @@
 class ChatClient : public QObject{
   Q_OBJECT
 public:
-  ChatClient(QObject* parent = nullptr);
-  ~ChatClient();
+  explicit ChatClient(QObject* parent = nullptr);
+  virtual ~ChatClient();
 
-  void connect_to_server(const std::string& ip, const int port, const Auth::AuthData& auth_data);
+  bool connect_to_server(const std::string& ip, const int port, const Auth::AuthData& auth_data);
   void send_message(const std::string& message);
   void stop();
 

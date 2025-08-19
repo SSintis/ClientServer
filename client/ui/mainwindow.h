@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "../include/ChatClient.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,11 +17,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void setChatClient(ChatClient* chatClient);
+
 private slots:
     void onSendButtonClicked();
     void onReceiverButtonClicked();
+    void onMessageReceived(const QString &sender, const QString &message);
+    void onConnectionError(const QString &error);
 
 private:
     Ui::MainWindow *ui;
+    ChatClient *client;
 };
 #endif // MAINWINDOW_H
