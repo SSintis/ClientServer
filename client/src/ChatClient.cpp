@@ -100,3 +100,7 @@ void ChatClient::proccesed_message(const nlohmann::json& data){
     emit message_received(sender, message);
   }
 }
+
+void ChatClient::set_new_receiver(const std::string& new_receiver){
+  this->user_data.receiver = new_receiver;
+}

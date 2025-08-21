@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
                       authData.password = password.toStdString();
                       authData.receiver = receiver.toStdString();
 
-                      if(chatClient.connect_to_server("192.168.100.11", 3425, authData)){
+                      if(chatClient.connect_to_server("10.28.188.60", 3425, authData)){
                         mainWindow.setChatClient(&chatClient);
                         stack.setCurrentIndex(1);
                       }

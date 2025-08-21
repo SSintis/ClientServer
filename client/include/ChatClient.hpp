@@ -18,6 +18,8 @@ public:
   bool connect_to_server(const std::string& ip, const int port, const Auth::AuthData& auth_data);
   void send_message(const std::string& message);
   void stop();
+  
+  void set_new_receiver(const std::string& new_receiver);
 
 signals:
   void message_received(const QString& sender, const QString& message);

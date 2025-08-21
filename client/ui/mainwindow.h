@@ -28,5 +28,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     ChatClient *client;
+    QButtonGroup *userButtonGroup;
+    QString currentReceiver;
 };
 #endif // MAINWINDOW_H

@@ -48,8 +48,6 @@ void MainWindow::onConnectionError(const QString &error){
 }
 
 void MainWindow::onReceiverButtonClicked(){
-    // Here we swap receiver
     QString new_receiver = ui->lineEdit_receiver->text();
-
-    // client-server code...
+    this->client->set_new_receiver(new_receiver.toStdString());
 }
