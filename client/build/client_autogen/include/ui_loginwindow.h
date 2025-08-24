@@ -23,7 +23,7 @@ public:
     QLineEdit *usernameEdit;
     QLineEdit *passwordEdit;
     QPushButton *loginButton;
-    QLineEdit *receiverEdit;
+    QLineEdit *ipEdit;
 
     void setupUi(QWidget *LoginWindow)
     {
@@ -44,10 +44,10 @@ public:
         loginButton->setGeometry(QRect(320, 260, 80, 26));
         loginButton->setContextMenuPolicy(Qt::NoContextMenu);
         loginButton->setLayoutDirection(Qt::LeftToRight);
-        receiverEdit = new QLineEdit(LoginWindow);
-        receiverEdit->setObjectName("receiverEdit");
-        receiverEdit->setGeometry(QRect(290, 230, 142, 26));
-        receiverEdit->setEchoMode(QLineEdit::Normal);
+        ipEdit = new QLineEdit(LoginWindow);
+        ipEdit->setObjectName("ipEdit");
+        ipEdit->setGeometry(QRect(290, 230, 142, 26));
+        ipEdit->setEchoMode(QLineEdit::Normal);
 
         retranslateUi(LoginWindow);
 
@@ -60,7 +60,7 @@ public:
         usernameEdit->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\320\233\320\276\320\263\320\270\320\275", nullptr));
         passwordEdit->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\320\237\320\260\321\200\320\276\320\273\321\214", nullptr));
         loginButton->setText(QCoreApplication::translate("LoginWindow", "\320\222\320\276\320\271\321\202\320\270", nullptr));
-        receiverEdit->setPlaceholderText(QCoreApplication::translate("LoginWindow", "\320\237\320\276\320\273\321\203\321\207\320\260\321\202\320\265\320\273\321\214", nullptr));
+        ipEdit->setPlaceholderText(QCoreApplication::translate("LoginWindow", "ip", nullptr));
     } // retranslateUi
 
 };

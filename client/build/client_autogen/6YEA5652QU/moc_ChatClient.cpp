@@ -26,14 +26,17 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 namespace {
 struct qt_meta_stringdata_ChatClient_t {
-    uint offsetsAndSizes[14];
+    uint offsetsAndSizes[20];
     char stringdata0[11];
     char stringdata1[17];
     char stringdata2[1];
     char stringdata3[7];
     char stringdata4[8];
-    char stringdata5[17];
-    char stringdata6[6];
+    char stringdata5[16];
+    char stringdata6[12];
+    char stringdata7[8];
+    char stringdata8[17];
+    char stringdata9[6];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_ChatClient_t::offsetsAndSizes) + ofs), len 
@@ -44,14 +47,20 @@ Q_CONSTINIT static const qt_meta_stringdata_ChatClient_t qt_meta_stringdata_Chat
         QT_MOC_LITERAL(28, 0),  // ""
         QT_MOC_LITERAL(29, 6),  // "sender"
         QT_MOC_LITERAL(36, 7),  // "message"
-        QT_MOC_LITERAL(44, 16),  // "connection_error"
-        QT_MOC_LITERAL(61, 5)   // "error"
+        QT_MOC_LITERAL(44, 15),  // "history_handler"
+        QT_MOC_LITERAL(60, 11),  // "std::string"
+        QT_MOC_LITERAL(72, 7),  // "history"
+        QT_MOC_LITERAL(80, 16),  // "connection_error"
+        QT_MOC_LITERAL(97, 5)   // "error"
     },
     "ChatClient",
     "message_received",
     "",
     "sender",
     "message",
+    "history_handler",
+    "std::string",
+    "history",
     "connection_error",
     "error"
 };
@@ -64,20 +73,22 @@ Q_CONSTINIT static const uint qt_meta_data_ChatClient[] = {
       10,       // revision
        0,       // classname
        0,    0, // classinfo
-       2,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       2,       // signalCount
+       3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   26,    2, 0x06,    1 /* Public */,
-       5,    1,   31,    2, 0x06,    4 /* Public */,
+       1,    2,   32,    2, 0x06,    1 /* Public */,
+       5,    1,   37,    2, 0x06,    4 /* Public */,
+       8,    1,   40,    2, 0x06,    6 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString, QMetaType::QString,    3,    4,
-    QMetaType::Void, QMetaType::QString,    6,
+    QMetaType::Void, 0x80000000 | 6,    7,
+    QMetaType::Void, QMetaType::QString,    9,
 
        0        // eod
 };
@@ -95,6 +106,9 @@ Q_CONSTINIT const QMetaObject ChatClient::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'history_handler'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const std::string &, std::false_type>,
         // method 'connection_error'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>
@@ -109,7 +123,8 @@ void ChatClient::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         (void)_t;
         switch (_id) {
         case 0: _t->message_received((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
-        case 1: _t->connection_error((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 1: _t->history_handler((*reinterpret_cast< std::add_pointer_t<std::string>>(_a[1]))); break;
+        case 2: _t->connection_error((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -122,9 +137,16 @@ void ChatClient::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             }
         }
         {
+            using _t = void (ChatClient::*)(const std::string & );
+            if (_t _q_method = &ChatClient::history_handler; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
+                *result = 1;
+                return;
+            }
+        }
+        {
             using _t = void (ChatClient::*)(const QString & );
             if (_t _q_method = &ChatClient::connection_error; *reinterpret_cast<_t *>(_a[1]) == _q_method) {
-                *result = 1;
+                *result = 2;
                 return;
             }
         }
@@ -150,13 +172,13 @@ int ChatClient::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 2)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
+        _id -= 3;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 2)
+        if (_id < 3)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 2;
+        _id -= 3;
     }
     return _id;
 }
@@ -169,10 +191,17 @@ void ChatClient::message_received(const QString & _t1, const QString & _t2)
 }
 
 // SIGNAL 1
-void ChatClient::connection_error(const QString & _t1)
+void ChatClient::history_handler(const std::string & _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+
+// SIGNAL 2
+void ChatClient::connection_error(const QString & _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

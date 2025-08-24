@@ -14,20 +14,23 @@ int main(int argc, char *argv[]){
     MainWindow mainWindow;
     ChatClient chatClient;  
 
-    login.setMinimumSize(730, 410);
-    mainWindow.setMinimumSize(730, 410);
+    login.setMinimumSize(730, 360);
+    mainWindow.setMinimumSize(880, 360);
+
+    mainWindow.addNewUserButton("user1");
+    mainWindow.addNewUserButton("user2");
+    mainWindow.addNewUserButton("sasha");
 
     stack.addWidget(&login);
     stack.addWidget(&mainWindow);
 
     QObject::connect(&login, &LoginWindow::loginSuccessful,
-                    [&](const QString &username, const QString &password, const QString &receiver){
+                    [&](const QString &username, const QString &password, const QString &ip){
                       Auth::AuthData authData;
                       authData.login = username.toStdString();
                       authData.password = password.toStdString();
-                      authData.receiver = receiver.toStdString();
 
-                      if(chatClient.connect_to_server("10.28.188.60", 3425, authData)){
+                      if(chatClient.connect_to_server(ip.toStdString(), 3425, authData)){
                         mainWindow.setChatClient(&chatClient);
                         stack.setCurrentIndex(1);
                       }

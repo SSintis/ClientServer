@@ -14,6 +14,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QWidget>
 
@@ -28,12 +29,14 @@ public:
     QTextBrowser *textBrowser;
     QLineEdit *lineEdit_receiver;
     QPushButton *pushButton_receiver;
+    QScrollArea *scrollArea;
+    QWidget *scrollAreaWidgetContents;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(730, 410);
+        MainWindow->resize(873, 358);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         pushButton = new QPushButton(centralwidget);
@@ -47,10 +50,18 @@ public:
         textBrowser->setGeometry(QRect(10, 50, 711, 261));
         lineEdit_receiver = new QLineEdit(centralwidget);
         lineEdit_receiver->setObjectName("lineEdit_receiver");
-        lineEdit_receiver->setGeometry(QRect(100, 10, 201, 26));
+        lineEdit_receiver->setGeometry(QRect(120, 10, 201, 26));
         pushButton_receiver = new QPushButton(centralwidget);
         pushButton_receiver->setObjectName("pushButton_receiver");
-        pushButton_receiver->setGeometry(QRect(10, 10, 88, 26));
+        pushButton_receiver->setGeometry(QRect(10, 10, 111, 26));
+        scrollArea = new QScrollArea(centralwidget);
+        scrollArea->setObjectName("scrollArea");
+        scrollArea->setGeometry(QRect(730, 50, 120, 291));
+        scrollArea->setWidgetResizable(true);
+        scrollAreaWidgetContents = new QWidget();
+        scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 118, 289));
+        scrollArea->setWidget(scrollAreaWidgetContents);
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);
@@ -62,7 +73,7 @@ public:
     {
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
         pushButton->setText(QCoreApplication::translate("MainWindow", "Send", nullptr));
-        pushButton_receiver->setText(QCoreApplication::translate("MainWindow", "Receiver", nullptr));
+        pushButton_receiver->setText(QCoreApplication::translate("MainWindow", "AddNewUser", nullptr));
     } // retranslateUi
 
 };

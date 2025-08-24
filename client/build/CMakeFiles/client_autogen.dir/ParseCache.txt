@@ -1322,7 +1322,14 @@
  mdp:/usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiglobal.h
  mdp:/usr/include/x86_64-linux-gnu/qt6/QtGui/qtransform.h
  mdp:/usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h
+ mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QButtonGroup
  mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMainWindow
+ mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout
+ mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qboxlayout.h
+ mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qbuttongroup.h
+ mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgridlayout.h
+ mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlayout.h
+ mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlayoutitem.h
  mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmainwindow.h
  mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsizepolicy.h
  mdp:/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabwidget.h

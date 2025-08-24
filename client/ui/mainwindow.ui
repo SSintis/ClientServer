@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>873</width>
-    <height>410</height>
+    <height>358</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,7 +50,7 @@
    <widget class="QLineEdit" name="lineEdit_receiver">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>120</x>
       <y>10</y>
       <width>201</width>
       <height>26</height>
@@ -62,12 +62,12 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>88</width>
+      <width>111</width>
       <height>26</height>
      </rect>
     </property>
     <property name="text">
-     <string>Receiver</string>
+     <string>AddNewUser</string>
     </property>
    </widget>
    <widget class="QScrollArea" name="scrollArea">

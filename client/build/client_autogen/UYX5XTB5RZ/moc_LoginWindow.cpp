@@ -32,7 +32,7 @@ struct qt_meta_stringdata_LoginWindow_t {
     char stringdata2[1];
     char stringdata3[9];
     char stringdata4[9];
-    char stringdata5[9];
+    char stringdata5[3];
     char stringdata6[23];
 };
 #define QT_MOC_LITERAL(ofs, len) \
@@ -44,15 +44,15 @@ Q_CONSTINIT static const qt_meta_stringdata_LoginWindow_t qt_meta_stringdata_Log
         QT_MOC_LITERAL(28, 0),  // ""
         QT_MOC_LITERAL(29, 8),  // "username"
         QT_MOC_LITERAL(38, 8),  // "password"
-        QT_MOC_LITERAL(47, 8),  // "receiver"
-        QT_MOC_LITERAL(56, 22)   // "on_loginButton_clicked"
+        QT_MOC_LITERAL(47, 2),  // "ip"
+        QT_MOC_LITERAL(50, 22)   // "on_loginButton_clicked"
     },
     "LoginWindow",
     "loginSuccessful",
     "",
     "username",
     "password",
-    "receiver",
+    "ip",
     "on_loginButton_clicked"
 };
 #undef QT_MOC_LITERAL

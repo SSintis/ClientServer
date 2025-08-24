@@ -12,7 +12,7 @@ LoginWindow::~LoginWindow(){
 void LoginWindow::on_loginButton_clicked(){
     QString username = ui->usernameEdit->text();
     QString password = ui->passwordEdit->text();
-    QString receiver = ui->receiverEdit->text();
+    QString ip = ui->ipEdit->text();
 
-    emit loginSuccessful(username, password, receiver);
+    emit loginSuccessful(username, password, ip);
 }

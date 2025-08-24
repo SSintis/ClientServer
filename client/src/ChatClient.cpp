@@ -99,8 +99,23 @@ void ChatClient::proccesed_message(const nlohmann::json& data){
 
     emit message_received(sender, message);
   }
+  else if(data["type"] == "history"){
+    emit history_handler(data["history"]); 
+  }
 }
 
 void ChatClient::set_new_receiver(const std::string& new_receiver){
   this->user_data.receiver = new_receiver;
+}
+
+void ChatClient::get_history(const std::string& username){
+  nlohmann::json message_packet;
+  message_packet["user"] = {
+    {"sender", this->user_data.login},
+    {"password", this->user_data.password}
+  };
+  message_packet["receiver"] = username;
+  message_packet["command"] = "history";
+
+  NetworkHandler::send_to_server(message_packet.dump(), this->sock);
 }
